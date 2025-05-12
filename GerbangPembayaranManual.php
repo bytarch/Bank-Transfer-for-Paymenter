@@ -1,83 +1,80 @@
 <?php
 
-namespace App\Extensions\Gateways\GerbangPembayaranManual;
+namespace Paymenter\Extensions\Gateways\GerbangPembayaranManual;
 
-use App\Classes\Extensions\Gateway;
-use App\Helpers\ExtensionHelper;
+use App\Classes\Extension\Gateway;
+use App\Models\Currency;
+use App\Models\Invoice;
+use Illuminate\Support\Facades\View;
 
 class GerbangPembayaranManual extends Gateway
 {
-    /**
-     * Get the extension metadata
-     *
-     * @return array
-     */
-    public function getMetadata()
+    public function boot()
     {
-        return [
-            'display_name' => 'GerbangPembayaranManual (GPM)',
-            'version' => '1.0.0',
-            'author' => 'Mohammad Raska',
-            'website' => 'https://github.com/Adekabang/GerbangPembayaranManual',
-        ];
+        require __DIR__ . '/routes.php';
+        // Register webhook route
+        View::addNamespace('gateways.gerbangpembayaranmanual', __DIR__ . '/resources/views');
     }
 
     /**
      * Get all the configuration for the extension
      *
+     * @param  array  $values
      * @return array
      */
-    public function getConfig()
+    public function getConfig($values = [])
     {
+        // return [];
         $bank_list = [
             [
-                'name' => 'Disable',
+                'label' => 'Disable',
                 'value' => 0,
             ],
             [
-                'name' => 'Mandiri',
+                'label' => 'Mandiri',
                 'value' => 'Bank/Bank%20Logo/Mandiri',
             ],
             [
-                'name' => 'BCA',
+                'label' => 'BCA',
                 'value' => 'Bank/Bank%20Logo/BCA',
             ],
             [
-                'name' => 'BNI',
+                'label' => 'BNI',
                 'value' => 'Bank/Bank%20Logo/BNI',
             ],
             [
-                'name' => 'BRI',
+                'label' => 'BRI',
                 'value' => 'Bank/Bank%20Logo/BRI',
             ],
             [
-                'name' => 'Jenius',
+                'label' => 'Jenius',
                 'value' => 'Bank/Bank%20App/Jenius',
             ],
             [
-                'name' => 'Gopay',
+                'label' => 'Gopay',
                 'value' => 'Bill%20Payment/E-Wallet/Gopay',
             ],
             [
-                'name' => 'DANA',
+                'label' => 'DANA',
                 'value' => 'Payment%20Channel/E-Wallet/DANA',
             ],
             [
-                'name' => 'Shopee Pay',
+                'label' => 'Shopee Pay',
                 'value' => 'Payment%20Channel/E-Wallet/Shopee%20Pay',
             ],
         ];
+
         return [
             [
                 'name' => 'order_id_prefix',
-                'friendlyName' => 'Order ID Prefix',
+                'label' => 'Order ID Prefix',
                 'type' => 'text',
                 'placeholder' => 'Order ID Prefix',
                 'required' => false,
             ],
             [
                 'name' => 'payment_confirmation_eta',
-                'friendlyName' => 'Payment Confirmation ETA',
+                'label' => 'Payment Confirmation ETA',
                 'type' => 'text',
                 'placeholder' => 'Estimate time for payment confirmation',
                 'required' => false,
@@ -85,22 +82,22 @@ class GerbangPembayaranManual extends Gateway
             // Rekening 1
             [
                 'name' => 'bank_name_1',
-                'friendlyName' => 'Payment 1: Bank or Wallet Name',
-                'type' => 'dropdown',
+                'label' => 'Payment 1: Bank or Wallet Name',
+                'type' => 'select',
                 'placeholder' => 'Name of Bank or Wallet to Accept Payment',
                 'required' => true,
-                'options' => $bank_list
+                'options' => $bank_list,
             ],
             [
                 'name' => 'merchant_name_1',
-                'friendlyName' => 'Payment 1: Merchant or Account Name',
+                'label' => 'Payment 1: Merchant or Account Name',
                 'type' => 'text',
                 'placeholder' => 'Name of the Merchant/Account Holder',
                 'required' => true,
             ],
             [
                 'name' => 'bank_account_number_1',
-                'friendlyName' => 'Payment 1: Bank or Wallet Account Number',
+                'label' => 'Payment 1: Bank or Wallet Account Number',
                 'type' => 'text',
                 'placeholder' => 'Account Number of Bank or Wallet to Accept Payment',
                 'required' => true,
@@ -108,22 +105,22 @@ class GerbangPembayaranManual extends Gateway
             // Rekening 2
             [
                 'name' => 'bank_name_2',
-                'friendlyName' => 'Payment 2: Bank or Wallet Name',
-                'type' => 'dropdown',
+                'label' => 'Payment 2: Bank or Wallet Name',
+                'type' => 'select',
                 'placeholder' => 'Name of Bank or Wallet to Accept Payment',
                 'required' => false,
-                'options' => $bank_list
+                'options' => $bank_list,
             ],
             [
                 'name' => 'merchant_name_2',
-                'friendlyName' => 'Payment 2: Merchant or Account Name',
+                'label' => 'Payment 2: Merchant or Account Name',
                 'type' => 'text',
                 'placeholder' => 'Name of the Merchant/Account Holder',
                 'required' => false,
             ],
             [
                 'name' => 'bank_account_number_2',
-                'friendlyName' => 'Payment 2: Bank or Wallet Account Number',
+                'label' => 'Payment 2: Bank or Wallet Account Number',
                 'type' => 'text',
                 'placeholder' => 'Account Number of Bank or Wallet to Accept Payment',
                 'required' => false,
@@ -131,22 +128,22 @@ class GerbangPembayaranManual extends Gateway
             // Rekening 3
             [
                 'name' => 'bank_name_3',
-                'friendlyName' => 'Payment 3: Bank or Wallet Name',
-                'type' => 'dropdown',
+                'label' => 'Payment 3: Bank or Wallet Name',
+                'type' => 'select',
                 'placeholder' => 'Name of Bank or Wallet to Accept Payment',
                 'required' => false,
-                'options' => $bank_list
+                'options' => $bank_list,
             ],
             [
                 'name' => 'merchant_name_3',
-                'friendlyName' => 'Payment 3: Merchant or Account Name',
+                'label' => 'Payment 3: Merchant or Account Name',
                 'type' => 'text',
                 'placeholder' => 'Name of the Merchant/Account Holder',
                 'required' => false,
             ],
             [
                 'name' => 'bank_account_number_3',
-                'friendlyName' => 'Payment 3: Bank or Wallet Account Number',
+                'label' => 'Payment 3: Bank or Wallet Account Number',
                 'type' => 'text',
                 'placeholder' => 'Account Number of Bank or Wallet to Accept Payment',
                 'required' => false,
@@ -154,32 +151,100 @@ class GerbangPembayaranManual extends Gateway
 
             [
                 'name' => 'whatsapp_number',
-                'friendlyName' => 'Whatsapp Number (format 628xxxxxxxxx)',
+                'label' => 'Whatsapp Number (format 628xxxxxxxxx)',
                 'type' => 'text',
                 'placeholder' => 'Whatsapp Number for Sending Confirmation (format 628xxxxxxxxx)',
                 'required' => true,
             ],
             [
                 'name' => 'confirmation_message',
-                'friendlyName' => 'Confirmation message send by Customer via Whatsapp',
+                'label' => 'Confirmation message send by Customer via Whatsapp',
                 'type' => 'text',
                 'placeholder' => 'ex: Halo Admin, berikut bukti pembayaran sewa cloud',
                 'required' => true,
-            ]
+            ],
         ];
     }
 
     /**
-     * Get the URL to redirect to
+     * Return a view or a url to redirect to
      *
-     * @param int $total
-     * @param array $products
-     * @param int $invoiceId
+     * @param  float  $total
      * @return string
      */
-    public function pay($total, $products, $invoiceId)
+    public function pay(Invoice $invoice, $total)
     {
-        $order_id = ExtensionHelper::getConfig('GerbangPembayaranManual', 'order_id_prefix') . $invoiceId;
-        return route('GerbangPembayaranManual.payment', ['order_id' => $order_id]);
+        $order_id = $this->config('order_id_prefix') . $invoice->id;
+        // return view('extensions.gateways.gerbangpembayaranmanual.payment', ['order_id' => $order_id]);
+
+        // $order_id = $request['order_id'];
+        $order_id_prefix = $this->config('order_id_prefix');
+        $invoiceId = substr($order_id, strlen($order_id_prefix));
+        $invoice = Invoice::find($invoiceId);
+        // dd($invoice);
+        $total = isset($invoice->credits) ? $invoice->credits : $total;
+
+        $bank_name_1 = $this->config('bank_name_1');
+        $name_1 = urldecode(substr(strrchr($bank_name_1, '/'), 1));
+        $merchant_name_1 = $this->config('merchant_name_1');
+        $bank_account_number_1 = $this->config('bank_account_number_1');
+        $bank_list = [[$bank_name_1, $name_1]];
+        $merchant_list = [$merchant_name_1];
+        $bank_account_list = [$bank_account_number_1];
+
+        $bank_name_2 = $this->config('bank_name_2');
+        $name_2 = urldecode(substr(strrchr($bank_name_2, '/'), 1));
+        $merchant_name_2 = $this->config('merchant_name_2');
+        $bank_account_number_2 = $this->config('bank_account_number_2');
+        if ($bank_name_2 != 0 && $merchant_name_2 != '' && $bank_account_number_2 != '') {
+            array_push($bank_list, [$bank_name_2, $name_2]);
+            array_push($merchant_list, $merchant_name_2);
+            array_push($bank_account_list, $bank_account_number_2);
+        }
+
+        $bank_name_3 = $this->config('bank_name_3');
+        $name_3 = urldecode(substr(strrchr($bank_name_3, '/'), 1));
+        $merchant_name_3 = $this->config('merchant_name_3');
+        $bank_account_number_3 = $this->config('bank_account_number_3');
+        if ($bank_name_3 != 0 && $merchant_name_3 != '' && $bank_account_number_3 != '') {
+            array_push($bank_list, [$bank_name_3, $name_3]);
+            array_push($merchant_list, $merchant_name_3);
+            array_push($bank_account_list, $bank_account_number_3);
+        }
+
+        $whatsapp_number = $this->config('whatsapp_number');
+        $confirmation_message = $this->config('confirmation_message');
+        $payment_confirmation_eta = $this->config('payment_confirmation_eta');
+
+        $back_invoice = route('invoices', $invoiceId);
+        // dd([
+        //     'order_id' => $order_id,
+        //     'back_invoice' => $back_invoice,
+        //     'total' => $total,
+
+        //     'bank_list' => $bank_list,
+        //     'merchant_list' => $merchant_list,
+        //     'bank_account_list' => $bank_account_list,
+
+        //     'whatsapp_number' => $whatsapp_number,
+        //     'confirmation_message' => $confirmation_message,
+        //     'payment_confirmation_eta' => $payment_confirmation_eta,
+        // ]);
+
+        return view('gateways.gerbangpembayaranmanual::pay', [
+            'order_id' => $order_id,
+            'back_invoice' => $back_invoice,
+            'prefix' => Currency::where('code', $invoice->currency_code)->first()->prefix,
+            'total' => $total,
+            'suffix' => Currency::where('code', $invoice->currency_code)->first()->suffix,
+
+            'bank_list' => $bank_list,
+            'merchant_list' => $merchant_list,
+            'bank_account_list' => $bank_account_list,
+
+            'whatsapp_number' => $whatsapp_number,
+            'confirmation_message' => $confirmation_message,
+            'payment_confirmation_eta' => $payment_confirmation_eta,
+        ]);
     }
 }

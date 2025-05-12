@@ -2,13 +2,13 @@
 
 GerbangPembayaranManual is a payment gateway extension for [Paymenter](https://github.com/Paymenter/paymenter) that enables clients to choose their preferred Indonesian bank or e-wallet for manual transfers and confirm payments via WhatsApp.
 
-![GerbangPembayaranManual Screenshot](img/GPM-screenshot.jpeg)
+![GerbangPembayaranManual Screenshot](img/GPM-screenshot.png)
 
 ## Features
 
 - **Support for Up to 3 Banks or E-Wallet Accounts**: Configure up to three different bank or e-wallet accounts to receive payments.
 - **Click-to-WhatsApp**: Clients can easily confirm their payments by clicking a button that redirects them to WhatsApp chat with the seller.
-- **IDR Currency Support**: Currently supports transactions in Indonesian Rupiah (IDR) only.
+- **All Currency Support**: Supports transactions in all Currency on settings.
 - **Indonesian Banks and E-Wallets**: Compatible with major Indonesian banks and e-wallet services.
 
 ## How It Works
@@ -148,8 +148,10 @@ Here are the fields that you need to fill in:
 
 1. **Navigate to the Extension Settings**:
 
-   - In the Paymenter admin panel, go to **Settings** > **Payment Gateways**.
-   - Click on **GerbangPembayaranManual**.
+   - In the Paymenter admin panel, go to **Extensions** > **Gateways**.
+   - New Gateway
+   - Choose on **GerbangPembayaranManual**.
+   - Create
 
 2. **Fill in the Required Fields**:
 
@@ -193,7 +195,7 @@ Here are the fields that you need to fill in:
 
 Below is a screenshot of the GerbangPembayaranManual extension in action:
 
-![GerbangPembayaranManual Screenshot](img/GPM-screenshot.jpeg)
+![GerbangPembayaranManual Screenshot](img/GPM-screenshot.png)
 
 ## Contributing
 
