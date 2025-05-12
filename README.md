@@ -7,8 +7,8 @@ GerbangPembayaranManual is a payment gateway extension for [Paymenter](https://g
 ## Features
 
 - **Support for Up to 3 Banks or E-Wallet Accounts**: Configure up to three different bank or e-wallet accounts to receive payments.
-- **Click-to-WhatsApp**: Clients can easily confirm their payments by clicking a button that redirects them to WhatsApp chat with the seller.
-- **All Currency Support**: Supports transactions in all Currency on settings.
+- **Click-to-WhatsApp**: Clients can easily confirm their payments by clicking a button that redirects them to a WhatsApp chat with the seller.
+- **All Currency Support**: Supports transactions in all currencies configured in the settings.
 - **Indonesian Banks and E-Wallets**: Compatible with major Indonesian banks and e-wallet services.
 
 ## How It Works
@@ -19,42 +19,48 @@ GerbangPembayaranManual is a payment gateway extension for [Paymenter](https://g
 
 ## Installation
 
-### Option 1: Install via Extension Marketplace
+### Option 1: Install via One-line script
 
-1. **Access the Extension Marketplace**:
+1. **SSH to Paymenter Machine**
 
-   - Log in to your Paymenter admin panel.
-   - Navigate to **Extensions**.
+2. **Installation**
 
-2. **Find and Install GerbangPembayaranManual**:
-
-   - Search for **GerbangPembayaranManual**.
-   - Click **Install**.
+Execute the command below:
+```bash
+git clone https://github.com/Adekabang/GerbangPembayaranManual.git /var/www/paymenter/extensions/Gateways/GerbangPembayaranManual
+```
 
 3. **Activate the Extension**:
 
-   - Go to `https://your-paymenter.com/admin/extensions`.
-   - Find **GerbangPembayaranManual** and set **Enabled** to **True**.
+   - Log in to your Paymenter admin panel.
+   - Navigate to Extensions > Gateways.
+   - Click "Create New Gateway".
+   - Find **GerbangPembayaranManual**, set a name, and click the "Create" button.
+
+4. **Configuration**
+   - On the Gateways List, edit the GPM entry.
+   - Fill out the required fields.
 
 ### Option 2: Manual Installation via GitHub
 
 1. **Download the Extension**:
 
-   - Clone the repository or download the ZIP file:
-
-     ```bash
-     git clone https://github.com/yourusername/GerbangPembayaranManual.git
-     ```
+   - Download the ZIP file from Github.
 
 2. **Upload to Paymenter**:
 
-   - Place the `GerbangPembayaranManual` folder into the `app/Extensions/Gateways` directory of your Paymenter installation.
+   - Place the `GerbangPembayaranManual` folder into the `/var/www/paymenter/extensions/Gateways/GerbangPembayaranManual` directory of your Paymenter installation.
 
 3. **Activate the Extension**:
 
    - Log in to your Paymenter admin panel.
-   - Navigate to `https://your-paymenter.com/admin/extensions`.
-   - Find **GerbangPembayaranManual** and set **Enabled** to **True**.
+   - Navigate to Extensions > Gateways.
+   - Click "Create New Gateway".
+   - Find **GerbangPembayaranManual**, set a name, and click the "Create" button.
+
+4. **Configuration**
+   - On the Gateways List, edit the GPM entry.
+   - Fill out the required fields.
 
 ## Configuration
 
@@ -149,9 +155,9 @@ Here are the fields that you need to fill in:
 1. **Navigate to the Extension Settings**:
 
    - In the Paymenter admin panel, go to **Extensions** > **Gateways**.
-   - New Gateway
-   - Choose on **GerbangPembayaranManual**.
-   - Create
+   - Click "New Gateway".
+   - Choose **GerbangPembayaranManual**.
+   - Click "Create".
 
 2. **Fill in the Required Fields**:
 
@@ -202,9 +208,9 @@ Below is a screenshot of the GerbangPembayaranManual extension in action:
 Contributions are welcome! Please follow these steps:
 
 1. Fork the repository.
-2. Create a new branch: `git checkout -b feature/YourFeature`.
+2. Create a new branch: `git checkout -b feature/your-feature-name`.
 3. Commit your changes: `git commit -m 'Add some feature'`.
-4. Push to the branch: `git push origin feature/YourFeature`.
+4. Push to the branch: `git push origin feature/your-feature-name`.
 5. Open a pull request.
 
 ## License
