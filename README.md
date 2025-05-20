@@ -2,7 +2,7 @@
 
 GerbangPembayaranManual is a payment gateway extension for [Paymenter](https://github.com/Paymenter/paymenter) that enables clients to choose their preferred Indonesian bank or e-wallet for manual transfers and confirm payments via WhatsApp.
 
-![GerbangPembayaranManual Screenshot](img/GPM-screenshot.png)
+![GerbangPembayaranManual Screenshot](img/GPM-tf.png)
 
 ## Features
 
@@ -100,6 +100,12 @@ Here are the fields that you need to fill in:
   - *Required*: Yes
   - *Description*: Account number of the bank or e-wallet to accept payment.
 
+- **Payment 1: QRIS Image URL** (`qris_image_url_1`):
+  - *Type*: Text
+  - *Placeholder*: URL of QRIS image (only needed if QRIS is selected)
+  - *Required*: No
+  - *Description*: The URL for the QRIS image associated with this payment method. Only needed if the selected payment method is QRIS.
+
 #### Payment Method 2 (Optional)
 
 - **Payment 2: Bank or Wallet Name** (`bank_name_2`):
@@ -118,6 +124,12 @@ Here are the fields that you need to fill in:
   - *Required*: No
   - *Description*: Account number of the bank or e-wallet to accept payment.
 
+- **Payment 2: QRIS Image URL** (`qris_image_url_2`):
+  - *Type*: Text
+  - *Placeholder*: URL of QRIS image (only needed if QRIS is selected)
+  - *Required*: No
+  - *Description*: The URL for the QRIS image associated with this payment method. Only needed if the selected payment method is QRIS.
+
 #### Payment Method 3 (Optional)
 
 - **Payment 3: Bank or Wallet Name** (`bank_name_3`):
@@ -135,6 +147,12 @@ Here are the fields that you need to fill in:
   - *Type*: Text
   - *Required*: No
   - *Description*: Account number of the bank or e-wallet to accept payment.
+
+- **Payment 3: QRIS Image URL** (`qris_image_url_3`):
+  - *Type*: Text
+  - *Placeholder*: URL of QRIS image (only needed if QRIS is selected)
+  - *Required*: No
+  - *Description*: The URL for the QRIS image associated with this payment method. Only needed if the selected payment method is QRIS.
 
 #### WhatsApp Configuration
 
@@ -166,7 +184,7 @@ Here are the fields that you need to fill in:
 
 3. **Configure Payment Methods**:
 
-   - For **Payment 1**, select the **Bank or Wallet Name** from the dropdown, and fill in the **Merchant Name** and **Account Number**.
+   - For **Payment 1**, select the **Bank or Wallet Name** from the dropdown, and fill in the **Merchant Name**, **Account Number**, and optionally the **QRIS Image URL** if QRIS is selected.
    - Optionally, repeat the above step for **Payment 2** and **Payment 3**.
 
 4. **Set Up WhatsApp Details**:
@@ -182,12 +200,12 @@ Here are the fields that you need to fill in:
 
   1. During checkout, select **GerbangPembayaranManual** as the payment method.
   2. Choose your preferred bank or e-wallet from the available options.
-  3. Transfer the payment amount manually using the provided account details.
-  4. Click the **Confirm via WhatsApp** button to send the predefined message and confirm the payment.
+  3. Transfer the payment amount manually using the provided account details and/or scan the QRIS code if applicable.
+  4. Click the **Send payment document via Whatsapp** button to send the predefined message and confirm the payment.
 
 - **For Sellers**:
 
-  - Ensure your WhatsApp contact information is correctly configured.
+  - Ensure your WhatsApp contact information and configured bank/e-wallet details are correct.
   - Monitor WhatsApp for payment confirmations from clients.
   - Verify the payment and process the order accordingly.
 
@@ -201,7 +219,8 @@ Here are the fields that you need to fill in:
 
 Below is a screenshot of the GerbangPembayaranManual extension in action:
 
-![GerbangPembayaranManual Screenshot](img/GPM-screenshot.png)
+![GerbangPembayaranManual Transfer](img/GPM-tf.png)
+![GerbangPembayaranManual QRIS](img/GPM-qris.png)
 
 ## Contributing
 

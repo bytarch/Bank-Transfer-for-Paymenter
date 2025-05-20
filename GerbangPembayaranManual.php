@@ -62,6 +62,10 @@ class GerbangPembayaranManual extends Gateway
                 'label' => 'Shopee Pay',
                 'value' => 'Payment%20Channel/E-Wallet/Shopee%20Pay',
             ],
+            [
+                'label' => 'QRIS',
+                'value' => 'Payment%20Channel/Miscellaneous/QRIS',
+            ],
         ];
 
         return [
@@ -99,8 +103,15 @@ class GerbangPembayaranManual extends Gateway
                 'name' => 'bank_account_number_1',
                 'label' => 'Payment 1: Bank or Wallet Account Number',
                 'type' => 'text',
-                'placeholder' => 'Account Number of Bank or Wallet to Accept Payment',
+                'placeholder' => 'Account Number of Bank or Wallet to Accept Payment (Put 0 for QRIS)',
                 'required' => true,
+            ],
+            [
+                'name' => 'qris_image_url_1',
+                'label' => 'Payment 1: QRIS Image URL',
+                'type' => 'text',
+                'placeholder' => 'URL of QRIS image (only needed if QRIS is selected)',
+                'required' => false,
             ],
             // Rekening 2
             [
@@ -122,7 +133,14 @@ class GerbangPembayaranManual extends Gateway
                 'name' => 'bank_account_number_2',
                 'label' => 'Payment 2: Bank or Wallet Account Number',
                 'type' => 'text',
-                'placeholder' => 'Account Number of Bank or Wallet to Accept Payment',
+                'placeholder' => 'Account Number of Bank or Wallet to Accept Payment (',
+                'required' => false,
+            ],
+            [
+                'name' => 'qris_image_url_2',
+                'label' => 'Payment 2: QRIS Image URL',
+                'type' => 'text',
+                'placeholder' => 'URL of QRIS image (only needed if QRIS is selected)',
                 'required' => false,
             ],
             // Rekening 3
@@ -145,7 +163,14 @@ class GerbangPembayaranManual extends Gateway
                 'name' => 'bank_account_number_3',
                 'label' => 'Payment 3: Bank or Wallet Account Number',
                 'type' => 'text',
-                'placeholder' => 'Account Number of Bank or Wallet to Accept Payment',
+                'placeholder' => 'Account Number of Bank or Wallet to Accept Payment (',
+                'required' => false,
+            ],
+            [
+                'name' => 'qris_image_url_3',
+                'label' => 'Payment 3: QRIS Image URL',
+                'type' => 'text',
+                'placeholder' => 'URL of QRIS image (only needed if QRIS is selected)',
                 'required' => false,
             ],
 
@@ -188,28 +213,34 @@ class GerbangPembayaranManual extends Gateway
         $name_1 = urldecode(substr(strrchr($bank_name_1, '/'), 1));
         $merchant_name_1 = $this->config('merchant_name_1');
         $bank_account_number_1 = $this->config('bank_account_number_1');
+        $qris_image_url_1 = $this->config('qris_image_url_1');
         $bank_list = [[$bank_name_1, $name_1]];
         $merchant_list = [$merchant_name_1];
         $bank_account_list = [$bank_account_number_1];
+        $qris_image_list = [$qris_image_url_1];
 
         $bank_name_2 = $this->config('bank_name_2');
         $name_2 = urldecode(substr(strrchr($bank_name_2, '/'), 1));
         $merchant_name_2 = $this->config('merchant_name_2');
         $bank_account_number_2 = $this->config('bank_account_number_2');
+        $qris_image_url_2 = $this->config('qris_image_url_2');
         if ($bank_name_2 != 0 && $merchant_name_2 != '' && $bank_account_number_2 != '') {
             array_push($bank_list, [$bank_name_2, $name_2]);
             array_push($merchant_list, $merchant_name_2);
             array_push($bank_account_list, $bank_account_number_2);
+            array_push($qris_image_list, $qris_image_url_2);
         }
 
         $bank_name_3 = $this->config('bank_name_3');
         $name_3 = urldecode(substr(strrchr($bank_name_3, '/'), 1));
         $merchant_name_3 = $this->config('merchant_name_3');
         $bank_account_number_3 = $this->config('bank_account_number_3');
+        $qris_image_url_3 = $this->config('qris_image_url_3');
         if ($bank_name_3 != 0 && $merchant_name_3 != '' && $bank_account_number_3 != '') {
             array_push($bank_list, [$bank_name_3, $name_3]);
             array_push($merchant_list, $merchant_name_3);
             array_push($bank_account_list, $bank_account_number_3);
+            array_push($qris_image_list, $qris_image_url_3);
         }
 
         $whatsapp_number = $this->config('whatsapp_number');
@@ -241,6 +272,7 @@ class GerbangPembayaranManual extends Gateway
             'bank_list' => $bank_list,
             'merchant_list' => $merchant_list,
             'bank_account_list' => $bank_account_list,
+            'qris_image_list' => $qris_image_list,
 
             'whatsapp_number' => $whatsapp_number,
             'confirmation_message' => $confirmation_message,

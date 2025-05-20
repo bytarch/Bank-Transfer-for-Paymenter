@@ -17,12 +17,15 @@ foreach ($bank_list as $index => $bank) {
 if (isset($merchant_list[$index], $bank_account_list[$index])) {
 $bankId = $bank[0]; // Use the bank path as ID
 $bankName = $bank[1]; // Use the bank name
+$isQRIS = strpos($bankId, 'QRIS') !== false;
 
 $jsBankDetails[$bankId] = [
 'name' => $bankName,
 'accountName' => $merchant_list[$index],
 'accountNumber' => $bank_account_list[$index],
-'logoUrl' => "https://cdn.jsdelivr.net/gh/Adekabang/indonesia-logo-library@main/{$bankId}.png"
+'logoUrl' => "https://cdn.jsdelivr.net/gh/Adekabang/indonesia-logo-library@main/{$bankId}.png",
+'QRISImageUrl' => $isQRIS ? ($qris_image_list[$index] ?? '') : '',
+'isQRIS' => $isQRIS
 ];
 
 // Set first bank ID if not set yet
@@ -142,7 +145,7 @@ $firstBankId = $bankId;
                                 -
                             </div>
                         </div>
-                        <div class="my-3">
+                        <div class="my-3" id="account-number-section">
                             <p class="text-sm">Account Number:</p>
                             <div class="text-lg font-medium">
                                 <div class="relative">
@@ -171,12 +174,18 @@ $firstBankId = $bankId;
                                         </span>
                                     </button>
                                     <div id="tooltip-bank-account-0" role="tooltip"
-                                        class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-muted text-base rounded-lg shadow-sm opacity-0 tooltip">
+                                        class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium transition-opacity duration-300 bg-muted text-base rounded-lg shadow-sm opacity-0 tooltip">
                                         <span id="default-tooltip-message-bank-account-0">Copy to clipboard</span>
                                         <span id="success-tooltip-message-bank-account-0" class="hidden">Copied!</span>
                                         <div class="tooltip-arrow" data-popper-arrow></div>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="my-3 hidden" id="qris-image-section">
+                            <p class="text-sm">QRIS Code:</p>
+                            <div class="text-lg font-medium">
+                                <img id="qris-image" src="" alt="QRIS Code" class="max-w-full max-h-48 mx-auto" />
                             </div>
                         </div>
                     </div>
@@ -246,7 +255,21 @@ $firstBankId = $bankId;
 
             if (bankNameEl) bankNameEl.textContent = selectedBank.name;
             if (accountNameEl) accountNameEl.textContent = selectedBank.accountName;
-            if (accountNumberInputEl) accountNumberInputEl.value = selectedBank.accountNumber;
+
+            // Show/hide account number or QRIS image based on payment type
+            const accountNumberSection = document.getElementById('account-number-section');
+            const qrisImageSection = document.getElementById('qris-image-section');
+            const qrisImage = document.getElementById('qris-image');
+
+            if (selectedBank.isQRIS) {
+                if (accountNumberSection) accountNumberSection.classList.add('hidden');
+                if (qrisImageSection) qrisImageSection.classList.remove('hidden');
+                if (qrisImage) qrisImage.src = selectedBank.QRISImageUrl;
+            } else {
+                if (accountNumberSection) accountNumberSection.classList.remove('hidden');
+                if (qrisImageSection) qrisImageSection.classList.add('hidden');
+                if (accountNumberInputEl) accountNumberInputEl.value = selectedBank.accountNumber;
+            }
 
             // Update active tab style
             bankTabItems.forEach(tab => {
