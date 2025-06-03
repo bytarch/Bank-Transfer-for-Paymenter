@@ -30,14 +30,18 @@ Execute the command below:
 git clone https://github.com/Adekabang/GerbangPembayaranManual.git /var/www/paymenter/extensions/Gateways/GerbangPembayaranManual
 ```
 
-3. **Activate the Extension**:
+3. **Build the Assets**
+Follow this link for build the assets of the extension
+[https://paymenter.org/development/theme/assets](https://paymenter.org/development/theme/assets)
+
+4. **Activate the Extension**:
 
    - Log in to your Paymenter admin panel.
    - Navigate to Extensions > Gateways.
    - Click "Create New Gateway".
    - Find **GerbangPembayaranManual**, set a name, and click the "Create" button.
 
-4. **Configuration**
+5. **Configuration**
    - On the Gateways List, edit the GPM entry.
    - Fill out the required fields.
 

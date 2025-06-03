@@ -11,9 +11,9 @@ class GerbangPembayaranManual extends Gateway
 {
     public function boot()
     {
-        require __DIR__ . '/routes.php';
+        // require __DIR__ . '/routes.php';
         // Register webhook route
-        View::addNamespace('gateways.gerbangpembayaranmanual', __DIR__ . '/resources/views');
+        View::addNamespace('gateways.gerbangpembayaranmanual', __DIR__ . '/views');
     }
 
     /**
