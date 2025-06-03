@@ -31,7 +31,9 @@ git clone https://github.com/Adekabang/GerbangPembayaranManual.git /var/www/paym
 ```
 
 3. **Build the Assets**
-Follow this link for build the assets of the extension
+
+Follow this link for build the assets of the extension:
+
 [https://paymenter.org/development/theme/assets](https://paymenter.org/development/theme/assets)
 
 4. **Activate the Extension**:
