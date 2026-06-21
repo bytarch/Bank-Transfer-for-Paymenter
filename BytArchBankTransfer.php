@@ -66,10 +66,9 @@ class BytArchBankTransfer extends Gateway
                 'description' => 'Estimate time for payment confirmation',
                 'required' => false,
             ],
-            // Account 1
             [
                 'name' => 'bank_name_1',
-                'label' => 'Payment 1: Bank Name',
+                'label' => 'Bank Name',
                 'type' => 'select',
                 'description' => 'Name of Bank to Accept Payment',
                 'required' => true,
@@ -77,63 +76,17 @@ class BytArchBankTransfer extends Gateway
             ],
             [
                 'name' => 'merchant_name_1',
-                'label' => 'Payment 1: Account Name',
+                'label' => 'Account Name',
                 'type' => 'text',
                 'description' => 'Name of the Account Holder',
                 'required' => true,
             ],
             [
                 'name' => 'bank_account_number_1',
-                'label' => 'Payment 1: Account Number (or Phone Number for DigiWallet)',
+                'label' => 'Account Number (or Phone Number for DigiWallet)',
                 'type' => 'text',
                 'description' => 'Account Number of Bank to Accept Payment. For DigiWallet, enter the admin phone number.',
                 'required' => true,
-            ],
-            // Account 2
-            [
-                'name' => 'bank_name_2',
-                'label' => 'Payment 2: Bank Name',
-                'type' => 'select',
-                'description' => 'Name of Bank to Accept Payment',
-                'required' => false,
-                'options' => $bank_list,
-            ],
-            [
-                'name' => 'merchant_name_2',
-                'label' => 'Payment 2: Account Name',
-                'type' => 'text',
-                'description' => 'Name of the Account Holder',
-                'required' => false,
-            ],
-            [
-                'name' => 'bank_account_number_2',
-                'label' => 'Payment 2: Account Number (or Phone Number for DigiWallet)',
-                'type' => 'text',
-                'description' => 'Account Number of Bank to Accept Payment. For DigiWallet, enter the admin phone number.',
-                'required' => false,
-            ],
-            // Account 3
-            [
-                'name' => 'bank_name_3',
-                'label' => 'Payment 3: Bank Name',
-                'type' => 'select',
-                'description' => 'Name of Bank to Accept Payment',
-                'required' => false,
-                'options' => $bank_list,
-            ],
-            [
-                'name' => 'merchant_name_3',
-                'label' => 'Payment 3: Account Name',
-                'type' => 'text',
-                'description' => 'Name of the Account Holder',
-                'required' => false,
-            ],
-            [
-                'name' => 'bank_account_number_3',
-                'label' => 'Payment 3: Account Number (or Phone Number for DigiWallet)',
-                'type' => 'text',
-                'description' => 'Account Number of Bank to Accept Payment. For DigiWallet, enter the admin phone number.',
-                'required' => false,
             ],
 
             [
@@ -175,26 +128,6 @@ class BytArchBankTransfer extends Gateway
         $bank_list = [[$bank_name_1, $name_1]];
         $merchant_list = [$merchant_name_1];
         $bank_account_list = [$bank_account_number_1];
-
-        $bank_name_2 = $this->config('bank_name_2');
-        $name_2 = $bank_name_2 != 0 ? ucwords(str_replace('-', ' ', $bank_name_2)) : '';
-        $merchant_name_2 = $this->config('merchant_name_2');
-        $bank_account_number_2 = $this->config('bank_account_number_2');
-        if ($bank_name_2 != 0 && $merchant_name_2 != '' && $bank_account_number_2 != '') {
-            array_push($bank_list, [$bank_name_2, $name_2]);
-            array_push($merchant_list, $merchant_name_2);
-            array_push($bank_account_list, $bank_account_number_2);
-        }
-
-        $bank_name_3 = $this->config('bank_name_3');
-        $name_3 = $bank_name_3 != 0 ? ucwords(str_replace('-', ' ', $bank_name_3)) : '';
-        $merchant_name_3 = $this->config('merchant_name_3');
-        $bank_account_number_3 = $this->config('bank_account_number_3');
-        if ($bank_name_3 != 0 && $merchant_name_3 != '' && $bank_account_number_3 != '') {
-            array_push($bank_list, [$bank_name_3, $name_3]);
-            array_push($merchant_list, $merchant_name_3);
-            array_push($bank_account_list, $bank_account_number_3);
-        }
 
         $whatsapp_number = $this->config('whatsapp_number');
         $confirmation_message = $this->config('confirmation_message');
