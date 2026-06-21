@@ -202,12 +202,14 @@ class BytArchBankTransfer extends Gateway
 
         $back_invoice = route('invoices', $invoiceId);
 
+        $currency = Currency::where('code', $invoice->currency_code)->first();
+
         return view('gateways.bytarchbanktransfer::pay', [
             'order_id' => $order_id,
             'back_invoice' => $back_invoice,
-            'prefix' => Currency::where('code', $invoice->currency_code)->first()->prefix,
+            'prefix' => $currency ? $currency->prefix : '',
             'total' => $total,
-            'suffix' => Currency::where('code', $invoice->currency_code)->first()->suffix,
+            'suffix' => $currency ? $currency->suffix : '',
 
             'bank_list' => $bank_list,
             'merchant_list' => $merchant_list,

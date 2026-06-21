@@ -5,6 +5,14 @@ $whatsappLink = "https://wa.me/{$whatsapp_number}?text={$encodedConfirmationMess
 $formattedTotal = number_format($total ?? 0, 2, '.', ',');
 $rawTotal = $total ?? 0;
 
+$logoUrls = [
+'atlantic-bank' => 'https://www.atlabank.com/images/logo.jpg',
+'belize-bank' => 'https://static.wixstatic.com/media/c0de4d_cb59fbad81cc4a3c93fa6dd49715e406~mv2.png',
+'heritage-bank' => 'https://www.heritageibt.com/wp-content/uploads/2015/11/HB_NEW_logo_FINAL.jpg',
+'national-bank-of-belize' => 'https://www.nbbl.bz/wp-content/uploads/2022/07/National-Bank-of-Belize-Logo.png',
+'digiwallet' => 'https://www.digiwallet.bz/wp-content/uploads/2021/11/DWL-web-logo.png',
+];
+
 $jsBankDetails = [];
 $firstBankId = null;
 
@@ -18,14 +26,8 @@ $jsBankDetails[$bankId] = [
 'name' => $bankName,
 'accountName' => $merchant_list[$index],
 'accountNumber' => $bank_account_list[$index],
-'logoUrl' => match($bankId) {
-'atlantic-bank' => 'https://www.atlabank.com/images/logo.jpg',
-'belize-bank' => 'https://static.wixstatic.com/media/c0de4d_cb59fbad81cc4a3c93fa6dd49715e406~mv2.png',
-'heritage-bank' => 'https://www.heritageibt.com/wp-content/uploads/2015/11/HB_NEW_logo_FINAL.jpg',
-'national-bank-of-belize' => 'https://www.nbbl.bz/wp-content/uploads/2022/07/National-Bank-of-Belize-Logo.png',
-'digiwallet' => 'https://www.digiwallet.bz/wp-content/uploads/2021/11/DWL-web-logo.png',
-default => ''
-},
+'logoUrl' => isset($logoUrls[$bankId]) ? $logoUrls[$bankId] : '',
+];
 
 if ($firstBankId === null) {
 $firstBankId = $bankId;
