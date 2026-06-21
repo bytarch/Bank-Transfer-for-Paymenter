@@ -122,12 +122,19 @@ class BytArchBankTransfer extends Gateway
         $total = isset($invoice->credits) ? $invoice->credits : $total;
 
         $bank_name_1 = $this->config('bank_name_1');
-        $name_1 = $bank_name_1 != 0 ? ucwords(str_replace('-', ' ', $bank_name_1)) : '';
         $merchant_name_1 = $this->config('merchant_name_1');
         $bank_account_number_1 = $this->config('bank_account_number_1');
-        $bank_list = [[$bank_name_1, $name_1]];
-        $merchant_list = [$merchant_name_1];
-        $bank_account_list = [$bank_account_number_1];
+
+        $bank_list = [];
+        $merchant_list = [];
+        $bank_account_list = [];
+
+        if ($bank_name_1 && $bank_name_1 != 0 && $merchant_name_1 && $bank_account_number_1) {
+            $name_1 = ucwords(str_replace('-', ' ', $bank_name_1));
+            $bank_list = [[$bank_name_1, $name_1]];
+            $merchant_list = [$merchant_name_1];
+            $bank_account_list = [$bank_account_number_1];
+        }
 
         $whatsapp_number = $this->config('whatsapp_number');
         $confirmation_message = $this->config('confirmation_message');
