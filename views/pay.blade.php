@@ -1,12 +1,8 @@
 @php
-// Prepare the WhatsApp link. Ensure variables are properly escaped if they come from user input.
-// For demonstration, assuming $confirmation_message is safe or appropriately prepared.
-$encodedConfirmationMessage = rawurlencode($confirmation_message ?? 'Halo Admin');
+$encodedConfirmationMessage = rawurlencode($confirmation_message ?? 'Hello, here is my payment confirmation');
 $whatsappLink = "https://wa.me/{$whatsapp_number}?text={$encodedConfirmationMessage}%0AOrder%20ID%3A%20{$order_id}%0A";
 
-// Format the total amount for display
-$formattedTotal = number_format($total ?? 0, 0, ',', '.');
-// Keep raw total for copying
+$formattedTotal = number_format($total ?? 0, 2, '.', ',');
 $rawTotal = $total ?? 0;
 
 $jsBankDetails = [];
@@ -15,20 +11,22 @@ $firstBankId = null;
 if (isset($bank_list) && is_array($bank_list)) {
 foreach ($bank_list as $index => $bank) {
 if (isset($merchant_list[$index], $bank_account_list[$index])) {
-$bankId = $bank[0]; // Use the bank path as ID
-$bankName = $bank[1]; // Use the bank name
-$isQRIS = strpos($bankId, 'QRIS') !== false;
+$bankId = $bank[0];
+$bankName = $bank[1];
 
 $jsBankDetails[$bankId] = [
 'name' => $bankName,
 'accountName' => $merchant_list[$index],
 'accountNumber' => $bank_account_list[$index],
-'logoUrl' => "https://cdn.jsdelivr.net/gh/Adekabang/indonesia-logo-library@main/{$bankId}.png",
-'QRISImageUrl' => $isQRIS ? ($qris_image_list[$index] ?? '') : '',
-'isQRIS' => $isQRIS
-];
+'logoUrl' => match($bankId) {
+'atlantic-bank' => 'https://www.atlabank.com/images/logo.jpg',
+'belize-bank' => 'https://static.wixstatic.com/media/c0de4d_cb59fbad81cc4a3c93fa6dd49715e406~mv2.png',
+'heritage-bank' => 'https://www.heritageibt.com/wp-content/uploads/2015/11/HB_NEW_logo_FINAL.jpg',
+'national-bank-of-belize' => 'https://www.nbbl.bz/wp-content/uploads/2022/07/National-Bank-of-Belize-Logo.png',
+'digiwallet' => 'https://www.digiwallet.bz/wp-content/uploads/2021/11/DWL-web-logo.png',
+default => ''
+},
 
-// Set first bank ID if not set yet
 if ($firstBankId === null) {
 $firstBankId = $bankId;
 }
@@ -39,15 +37,9 @@ $firstBankId = $bankId;
 
 @assets
 <style>
-    /* Custom styles for better visual feedback or if needed */
-    /* body { font-family: 'Inter', sans-serif; } /* Ensure Inter font is loaded if you use it globally */
     .bank-tab-item.active {
         border-bottom-width: 2px;
         border-color: var(--primary);
-        /* gray-800 */
-        /* Example: Add a subtle shadow or background to the active tab for more emphasis */
-        /* background-color: #f9fafb; /* gray-50 */
-        /* box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); */
     }
 
     .bank-tab-item button img {
@@ -60,7 +52,6 @@ $firstBankId = $bankId;
 
     .tooltip {
         pointer-events: none;
-        /* Allow clicks to pass through to the button if tooltip is part of the button structure */
     }
 </style>
 @endassets
@@ -101,7 +92,6 @@ $firstBankId = $bankId;
                                     d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z">
                                 </path>
                             </svg>
-                            {{-- Assuming transfer note is the Order ID --}}
                             <span class="text-base leading-tight font-normal">Transfer Note:
                                 {{ $order_id ?? 'N/A' }}</span>
                         </li>
@@ -120,8 +110,7 @@ $firstBankId = $bankId;
                             <button class="focus:outline-none" aria-label="Select {{ $bankData['name'] }}">
                                 <img src="{{ $bankData['logoUrl'] }}" alt="{{ $bankData['name'] }} Logo"
                                     class="h-12 w-12 sm:h-16 sm:w-16 object-contain"
-                                    onerror="this.style.display='none'; this.parentElement.innerHTML = '{{ htmlspecialchars($bankData['name'], ENT_QUOTES) }}';"
-                                    {{-- Basic fallback for broken image --}} />
+                                    onerror="this.style.display='none'; this.parentElement.innerHTML = '{{ htmlspecialchars($bankData['name'], ENT_QUOTES) }}';" />
                             </button>
                         </li>
                         @endforeach
@@ -135,23 +124,21 @@ $firstBankId = $bankId;
                 <div>
                     <div class="rounded-lg bg-background-secondary p-4 text-left">
                         <h3 id="bank-name" class="text-center text-xl font-bold underline mb-4">
-                            {{-- Placeholder, will be updated by JS --}}
                             Select a Bank
                         </h3>
                         <div class="my-3">
                             <p class="text-sm">Account Name:</p>
                             <div id="account-name" class="text-lg font-medium">
-                                {{-- Placeholder, will be updated by JS --}}
                                 -
                             </div>
                         </div>
                         <div class="my-3" id="account-number-section">
-                            <p class="text-sm">Account Number:</p>
+                            <p class="text-sm" id="account-number-label">Account Number:</p>
                             <div class="text-lg font-medium">
                                 <div class="relative">
                                     <input id="bank-account-0" type="text"
                                         class="col-span-6 block w-full rounded-lg bg-background p-2.5 text-lg font-medium focus:ring-blue-500 focus:border-blue-500"
-                                        value="" {{-- Placeholder, will be updated by JS --}} disabled readonly
+                                        value="" disabled readonly
                                         aria-label="Bank Account Number" />
                                     <button data-copy-to-clipboard-target="bank-account-0"
                                         data-tooltip-target="tooltip-bank-account-0"
@@ -182,12 +169,6 @@ $firstBankId = $bankId;
                                 </div>
                             </div>
                         </div>
-                        <div class="my-3 hidden" id="qris-image-section">
-                            <p class="text-sm">QRIS Code:</p>
-                            <div class="text-lg font-medium">
-                                <img id="qris-image" src="" alt="QRIS Code" class="max-w-full max-h-48 mx-auto" />
-                            </div>
-                        </div>
                     </div>
                 </div>
                 @else
@@ -202,7 +183,7 @@ $firstBankId = $bankId;
     <div class="mt-6 space-y-3">
         <a href="{{ $whatsappLink }}" target="_blank"
             class="block w-full rounded-lg bg-primary px-4 py-3 text-center font-bold text-white hover:bg-primary/80 active:bg-gray-700 dark:active:bg-gray-500 transition-colors duration-200">Send
-            payment document via Whatsapp</a>
+            payment confirmation via WhatsApp</a>
     </div>
     <div class="mt-6 rounded-md bg-background-secondary p-4">
         <p class="mb-3">Your payment is processed manually. After making a payment, please be patient while waiting for
@@ -223,29 +204,24 @@ $firstBankId = $bankId;
 
 
     triggerScript.onload = () => {
-        console.log("Trigger script loaded. Initializing payment component logic."); // For debugging
+        console.log("Trigger script loaded. Initializing payment component logic.");
         const bankDetails = @json($jsBankDetails);
         const firstBankId = @json($firstBankId);
         console.log(bankDetails);
         console.log(firstBankId);
-        // Use the data passed from PHP, now locally scoped to this onload function.
 
-        // DOM Elements
         const bankNameEl = document.getElementById('bank-name');
         const accountNameEl = document.getElementById('account-name');
         const accountNumberInputEl = document.getElementById('bank-account-0');
         const bankTabsContainer = document.getElementById('bank-tabs');
 
         if (!bankTabsContainer) {
-            // console.error('Bank tabs container not found. Payment component cannot initialize fully.');
-            return; // Exit if essential elements are missing
+            return;
         }
         const bankTabItems = bankTabsContainer.querySelectorAll('.bank-tab-item');
 
-        // Function to update account information based on selected bank
         function updateAccountInfo(bankId) {
             if (!bankDetails || !bankDetails[bankId]) {
-                // console.warn('Details for bank ID ' + bankId + ' not found.');
                 if(bankNameEl) bankNameEl.textContent = 'Info Not Available';
                 if(accountNameEl) accountNameEl.textContent = '-';
                 if(accountNumberInputEl) accountNumberInputEl.value = '';
@@ -256,22 +232,19 @@ $firstBankId = $bankId;
             if (bankNameEl) bankNameEl.textContent = selectedBank.name;
             if (accountNameEl) accountNameEl.textContent = selectedBank.accountName;
 
-            // Show/hide account number or QRIS image based on payment type
             const accountNumberSection = document.getElementById('account-number-section');
-            const qrisImageSection = document.getElementById('qris-image-section');
-            const qrisImage = document.getElementById('qris-image');
+            const accountNumberLabel = document.getElementById('account-number-label');
+            if (accountNumberSection) accountNumberSection.classList.remove('hidden');
+            if (accountNumberInputEl) accountNumberInputEl.value = selectedBank.accountNumber;
 
-            if (selectedBank.isQRIS) {
-                if (accountNumberSection) accountNumberSection.classList.add('hidden');
-                if (qrisImageSection) qrisImageSection.classList.remove('hidden');
-                if (qrisImage) qrisImage.src = selectedBank.QRISImageUrl;
+            if (bankId === 'digiwallet') {
+                if (accountNumberLabel) accountNumberLabel.textContent = 'Phone Number:';
+                if (accountNumberInputEl) accountNumberInputEl.setAttribute('aria-label', 'Phone Number');
             } else {
-                if (accountNumberSection) accountNumberSection.classList.remove('hidden');
-                if (qrisImageSection) qrisImageSection.classList.add('hidden');
-                if (accountNumberInputEl) accountNumberInputEl.value = selectedBank.accountNumber;
+                if (accountNumberLabel) accountNumberLabel.textContent = 'Account Number:';
+                if (accountNumberInputEl) accountNumberInputEl.setAttribute('aria-label', 'Bank Account Number');
             }
 
-            // Update active tab style
             bankTabItems.forEach(tab => {
                 tab.classList.remove('active');
                 if (tab.dataset.bankId === bankId) {
@@ -279,7 +252,6 @@ $firstBankId = $bankId;
                 }
             });
 
-            // Reset copy button state and tooltip
             const defaultIcon = document.getElementById('default-icon-bank-account-0');
             const successIcon = document.getElementById('success-icon-bank-account-0');
             const tooltip = document.getElementById('tooltip-bank-account-0');
@@ -293,12 +265,11 @@ $firstBankId = $bankId;
             if (tooltip && defaultTooltipMessage && successTooltipMessage) {
                 defaultTooltipMessage.classList.remove('hidden');
                 successTooltipMessage.classList.add('hidden');
-                tooltip.classList.remove('opacity-100'); // Hide tooltip
+                tooltip.classList.remove('opacity-100');
                 tooltip.classList.add('opacity-0', 'invisible');
             }
         }
 
-        // Add event listeners to bank tabs for selection
         bankTabItems.forEach(tab => {
             tab.addEventListener('click', () => {
                 const bankId = tab.dataset.bankId;
@@ -306,26 +277,21 @@ $firstBankId = $bankId;
             });
         });
 
-        // Initialize with the first bank if available, or a fallback
         if (firstBankId && bankDetails[firstBankId]) {
             updateAccountInfo(firstBankId);
         } else if (bankTabItems.length > 0) {
-            // Fallback if firstBankId from PHP isn't set but tabs exist
             const firstAvailableTabId = bankTabItems[0].dataset.bankId;
-            if (firstAvailableTabId && bankDetails[firstAvailableTabId]) { // Check if details exist for this fallback
+            if (firstAvailableTabId && bankDetails[firstAvailableTabId]) {
                  updateAccountInfo(firstAvailableTabId);
             } else {
-                // console.warn('Fallback bank tab found, but no details available for it.');
                 if(bankNameEl) bankNameEl.textContent = 'No payment methods configured properly.';
             }
         } else {
-            // Handle case where no banks are available or details are missing
             if(bankNameEl) bankNameEl.textContent = 'No payment methods configured.';
             if(accountNameEl) accountNameEl.textContent = '-';
             if(accountNumberInputEl) accountNumberInputEl.value = '';
         }
 
-        // Clipboard Copy Functionality
         document.querySelectorAll('[data-copy-to-clipboard-target]').forEach(button => {
             const targetId = button.dataset.copyToClipboardTarget;
             const targetInput = document.getElementById(targetId);
@@ -340,39 +306,33 @@ $firstBankId = $bankId;
             const successTooltipMessageEl = tooltipEl ? tooltipEl.querySelector('#success-tooltip-message-bank-account-0') : null;
 
             if (!targetInput) {
-                // console.warn('Copy target input not found for ID:', targetId);
                 return;
             }
 
             button.addEventListener('click', () => {
                 if (targetInput.value === "") {
-                    // console.warn('Nothing to copy from input field.');
                     return;
                 }
-                targetInput.select(); // Select the text in the input field
-                targetInput.setSelectionRange(0, 99999); // For mobile devices
+                targetInput.select();
+                targetInput.setSelectionRange(0, 99999);
 
                 try {
-                    // Modern browsers: Clipboard API
                     if (navigator.clipboard && navigator.clipboard.writeText) {
                         navigator.clipboard.writeText(targetInput.value).then(() => {
                             showCopySuccess();
                         }).catch(err => {
-                            // console.error('Async clipboard write failed: ', err);
-                            showCopyErrorFallback(err); // Attempt fallback or show error
+                            showCopyErrorFallback(err);
                         });
-                    } else if (document.execCommand('copy')) { // Fallback for older browsers
+                    } else if (document.execCommand('copy')) {
                         showCopySuccess();
                     } else {
                        throw new Error('document.execCommand("copy") returned false.');
                     }
                 } catch (err) {
-                    // console.error('Clipboard copy failed: ', err);
                     showCopyErrorFallback(err);
                 }
             });
 
-            // Helper function to show success feedback for copy action
             function showCopySuccess() {
                 if (defaultIcon && successIcon) {
                     defaultIcon.classList.add('hidden');
@@ -396,10 +356,9 @@ $firstBankId = $bankId;
                         tooltipEl.classList.remove('opacity-100');
                         tooltipEl.classList.add('invisible', 'opacity-0');
                     }
-                }, 2000); // Reset after 2 seconds
+                }, 2000);
             }
 
-            // Helper function to show error feedback for copy action
             function showCopyErrorFallback(err) {
                  if (tooltipEl && defaultTooltipMessageEl) {
                     const originalMessage = defaultTooltipMessageEl.textContent;
@@ -411,15 +370,14 @@ $firstBankId = $bankId;
                     tooltipEl.classList.add('opacity-100');
 
                     setTimeout(() => {
-                        defaultTooltipMessageEl.textContent = originalMessage; // Reset to "Copy to clipboard"
+                        defaultTooltipMessageEl.textContent = originalMessage;
                         tooltipEl.classList.remove('opacity-100');
                         tooltipEl.classList.add('invisible', 'opacity-0');
-                    }, 2000); // Reset after 2 seconds
+                    }, 2000);
                 }
             }
         });
 
-        // Add copy functionality for the total amount
         const totalAmountElement = document.querySelector('[data-raw-value]');
         if (totalAmountElement) {
             totalAmountElement.addEventListener('click', async () => {
@@ -427,13 +385,11 @@ $firstBankId = $bankId;
                 try {
                     await navigator.clipboard.writeText(rawValue);
 
-                    // Show success state
                     const tooltip = totalAmountElement.parentElement.querySelector('.group-hover\\:visible');
                     if (tooltip) {
                         tooltip.textContent = 'Copied!';
                         tooltip.classList.add('bg-green-500');
 
-                        // Reset after 2 seconds
                         setTimeout(() => {
                             tooltip.textContent = 'Click to copy amount';
                             tooltip.classList.remove('bg-green-500');
@@ -446,7 +402,6 @@ $firstBankId = $bankId;
                         tooltip.textContent = 'Failed to copy';
                         tooltip.classList.add('bg-red-500');
 
-                        // Reset after 2 seconds
                         setTimeout(() => {
                             tooltip.textContent = 'Click to copy amount';
                             tooltip.classList.remove('bg-red-500');
@@ -457,14 +412,8 @@ $firstBankId = $bankId;
         }
     };
 
-    // Optional: Handle error if the trigger script fails to load
     triggerScript.onerror = () => {
         console.error("Failed to load the trigger script. Payment component may not initialize correctly.");
-        // You could try to initialize the component here as a fallback,
-        // or display a message to the user.
-        // For example, you could try calling the core logic directly:
-        // initializePaymentComponentLogic(bankDetailsData, firstBankIdData);
-        // (where initializePaymentComponentLogic would be the contents of triggerScript.onload)
     };
 </script>
 @endscript
